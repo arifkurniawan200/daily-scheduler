@@ -58,6 +58,9 @@ func Run(u usecase.UserUcase, t usecase.TransactionUcase) {
 	customer := e.Group("/customer")
 	{
 		customer.Use(JWTMiddleware("secret")) // still default,can change anytime (i suggest i should placed in  .env)
+		customer.POST("/buy", h.BuyProduct)
+		customer.GET("/my-voucher", h.MyVoucher)
+		customer.GET("/product", h.ListProduct)
 	}
 	admin := e.Group("/admin")
 	{

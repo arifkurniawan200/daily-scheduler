@@ -80,3 +80,90 @@ func (u handler) LoginUser(c echo.Context) error {
 		"token":   accessToken,
 	})
 }
+
+func (u handler) BuyProduct(c echo.Context) error {
+	transaction := new(model.TransactionParam)
+	if err := c.Bind(transaction); err != nil {
+		return c.JSON(http.StatusInternalServerError, ResponseFailed{
+			Messages: "failed to register user",
+			Error:    err.Error(),
+		})
+	}
+
+	validator := validator.New()
+
+	// Validasi struktur data customer
+	if err := validator.Struct(transaction); err != nil {
+		return c.JSON(http.StatusBadRequest, ResponseFailed{
+			Messages: "invalid payload",
+			Error:    err.Error()})
+	}
+
+	claims, ok := c.Get("claims").(jwt.MapClaims)
+	if !ok {
+		return c.JSON(http.StatusUnauthorized, map[string]interface{}{
+			"message": "Invalid or missing claims",
+		})
+	}
+
+	userID, ok := claims["id"].(float64)
+	if !ok {
+		return c.JSON(http.StatusInternalServerError, ResponseFailed{
+			Messages: "failed to get user id",
+		})
+	}
+	transaction.UserID = int(userID)
+	err := u.Transaction.CreateTransaction(*transaction)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, ResponseFailed{
+			Messages: "failed to buy product",
+			Error:    err.Error(),
+		})
+	}
+	return c.JSON(http.StatusCreated, ResponseSuccess{
+		Messages: "success buy product",
+	})
+}
+
+func (u handler) MyVoucher(c echo.Context) error {
+	claims, ok := c.Get("claims").(jwt.MapClaims)
+	if !ok {
+		return c.JSON(http.StatusUnauthorized, map[string]interface{}{
+			"message": "Invalid or missing claims",
+		})
+	}
+
+	userID, ok := claims["id"].(float64)
+	if !ok {
+		return c.JSON(http.StatusInternalServerError, ResponseFailed{
+			Messages: "failed to get user id",
+		})
+	}
+
+	data, err := u.User.GetVoucerByUserID(int(userID))
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, ResponseFailed{
+			Messages: "failed to get voucher",
+			Error:    err.Error(),
+		})
+	}
+	return c.JSON(http.StatusOK, ResponseSuccess{
+		Messages: "success fetch voucher",
+		Data:     data,
+	})
+}
+
+func (u handler) ListProduct(c echo.Context) error {
+
+	data, err := u.User.GetListProduct()
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, ResponseFailed{
+			Messages: "failed to get product",
+			Error:    err.Error(),
+		})
+	}
+	return c.JSON(http.StatusOK, ResponseSuccess{
+		Messages: "success fetch product",
+		Data:     data,
+	})
+}

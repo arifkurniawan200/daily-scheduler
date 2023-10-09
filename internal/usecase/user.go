@@ -15,14 +15,23 @@ type UserHandler struct {
 	u repository.UserRepository
 	t repository.TransactionRepository
 	c repository.CampaignRepository
+	p repository.ProductRepository
+}
+
+func (u UserHandler) GetListProduct() ([]model.Product, error) {
+	return u.p.GetProduct()
+}
+
+func (u UserHandler) GetVoucerByUserID(userId int) ([]model.Campaign, error) {
+	return u.c.CampaignUser(userId)
 }
 
 const (
 	secret = "abc&1*~#^2^#s0^=)^^7%b34"
 )
 
-func NewUserUsecase(u repository.UserRepository, t repository.TransactionRepository, c repository.CampaignRepository) UserUcase {
-	return &UserHandler{u, t, c}
+func NewUserUsecase(u repository.UserRepository, t repository.TransactionRepository, c repository.CampaignRepository, p repository.ProductRepository) UserUcase {
+	return &UserHandler{u, t, c, p}
 }
 
 func (u UserHandler) CreateCampaignForBirthdayUser() error {
@@ -35,6 +44,7 @@ func (u UserHandler) CreateCampaignForBirthdayUser() error {
 	}
 	if len(users) == 0 {
 		log.Infof("no users birthday in this day %s", nowStr)
+		return nil
 	}
 
 	campaign := model.Campaign{

@@ -19,8 +19,9 @@ func StartServer(cfg config.Config) {
 	userRepo := repository.NewUserRepository(dbs)
 	transactionRepo := repository.NewTransactionRepository(dbs)
 	campaignRepo := repository.NewCampaignRepository(dbs)
-	userUsecase := usecase.NewUserUsecase(userRepo, transactionRepo, campaignRepo)
-	transactionUcase := usecase.NewTransactionsUsecase(transactionRepo, userRepo)
+	productRepo := repository.NewProductRepository(dbs)
+	userUsecase := usecase.NewUserUsecase(userRepo, transactionRepo, campaignRepo, productRepo)
+	transactionUcase := usecase.NewTransactionsUsecase(transactionRepo, userRepo, productRepo, campaignRepo)
 
 	// run scheduler
 	scheduler.RunCron(userUsecase, transactionUcase)
