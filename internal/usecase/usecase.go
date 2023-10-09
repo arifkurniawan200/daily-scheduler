@@ -8,6 +8,7 @@ import (
 type UserUcase interface {
 	RegisterCustomer(ctx echo.Context, customer model.UserParam) error
 	GetUserInfoByEmail(ctx echo.Context, email string) (model.User, error)
+	CreateCampaignForBirthdayUser() error
 }
 
 type TransactionUcase interface {

@@ -10,6 +10,31 @@ type UserHandler struct {
 	db *sql.DB
 }
 
+func (h UserHandler) GetUserTodayBirthday(date string) ([]model.User, error) {
+	var (
+		datas []model.User
+		err   error
+	)
+	rows, err := h.db.Query(getUserBirthdayByDate, date)
+	if err != nil {
+		return datas, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var data model.User
+		if err = rows.Scan(&data.ID, &data.NIK, &data.FullName, &data.BornPlace, &data.BornDate, &data.IsAdmin, &data.Email, &data.Password, &data.CreatedAt, &data.UpdatedAt, &data.DeletedAt); err != nil {
+			return datas, err
+		}
+		datas = append(datas, data)
+	}
+
+	if err = rows.Err(); err != nil {
+		return datas, err
+	}
+	return datas, err
+}
+
 func NewUserRepository(db *sql.DB) UserRepository {
 	return &UserHandler{db}
 }
