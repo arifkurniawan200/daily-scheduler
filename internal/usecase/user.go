@@ -37,7 +37,7 @@ func NewUserUsecase(u repository.UserRepository, t repository.TransactionReposit
 func (u UserHandler) CreateCampaignForBirthdayUser() error {
 	now := time.Now()
 	nowStr := now.Format("2006-01-02")
-
+	fmt.Println(nowStr)
 	users, err := u.u.GetUserTodayBirthday(nowStr)
 	if err != nil {
 		return err

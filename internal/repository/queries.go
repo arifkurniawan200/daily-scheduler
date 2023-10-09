@@ -36,7 +36,8 @@ const (
         FROM
             users
         WHERE
-            born_date = ?
+            MONTH(born_date) = ?
+			AND DAY(born_date) = ?;
 `
 	createCampaign = `INSERT INTO campaigns (code, name, amount, start_date, end_date, quota)
 		VALUES(?,?,?,?,?,?)`
@@ -45,7 +46,7 @@ const (
 			(?, ?)`
 	getCampaignByCode = `SELECT id, code, name, amount, start_date, end_date, quota, created_at, updated_at, deleted_at
 		FROM campaigns
-		WHERE code = '?';`
+		WHERE code = ?;`
 
 	getCampaignByUserID = `SELECT campaigns.*
 		FROM campaigns
@@ -66,8 +67,8 @@ const (
 							(?, ?, ?, ?, ?);`
 
 	updateQuotaVoucher = `
-UPDATE campaigns
-SET quota = ?
-WHERE id = ?
-`
+		UPDATE campaigns
+		SET quota = ?
+		WHERE id = ?
+		`
 )

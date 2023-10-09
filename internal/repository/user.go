@@ -3,6 +3,7 @@ package repository
 import (
 	"context"
 	"database/sql"
+	"strings"
 	"template/internal/model"
 )
 
@@ -15,7 +16,8 @@ func (h UserHandler) GetUserTodayBirthday(date string) ([]model.User, error) {
 		datas []model.User
 		err   error
 	)
-	rows, err := h.db.Query(getUserBirthdayByDate, date)
+	args := strings.Split(date, "-")
+	rows, err := h.db.Query(getUserBirthdayByDate, args[1], args[2])
 	if err != nil {
 		return datas, err
 	}

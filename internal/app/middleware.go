@@ -2,7 +2,7 @@ package app
 
 import (
 	"fmt"
-	"github.com/golang-jwt/jwt"
+	"github.com/golang-jwt/jwt/v5"
 	"github.com/labstack/echo/v4"
 	"net/http"
 	"strings"
@@ -51,7 +51,7 @@ func JWTMiddleware(secretKey string) echo.MiddlewareFunc {
 					"message": "Failed to parse claims",
 				})
 			}
-
+			fmt.Println(claims)
 			// Store the claims in the context for later use
 			c.Set("claims", claims)
 

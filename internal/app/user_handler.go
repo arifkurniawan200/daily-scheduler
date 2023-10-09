@@ -1,6 +1,7 @@
 package app
 
 import (
+	"fmt"
 	"github.com/go-playground/validator/v10"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/labstack/echo/v4"
@@ -126,8 +127,10 @@ func (u handler) BuyProduct(c echo.Context) error {
 }
 
 func (u handler) MyVoucher(c echo.Context) error {
+	fmt.Println("masuk")
 	claims, ok := c.Get("claims").(jwt.MapClaims)
 	if !ok {
+		fmt.Println("masuk")
 		return c.JSON(http.StatusUnauthorized, map[string]interface{}{
 			"message": "Invalid or missing claims",
 		})
@@ -154,7 +157,6 @@ func (u handler) MyVoucher(c echo.Context) error {
 }
 
 func (u handler) ListProduct(c echo.Context) error {
-
 	data, err := u.User.GetListProduct()
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, ResponseFailed{
