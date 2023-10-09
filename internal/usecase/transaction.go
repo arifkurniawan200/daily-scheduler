@@ -33,7 +33,15 @@ func (t TransactionHandler) CreateTransaction(param model.TransactionParam) erro
 		}
 
 		if campaign.Quota <= 0 {
-			return fmt.Errorf("the voucher has expired, you cannot use it anymore")
+			return fmt.Errorf("the voucher has reach limit usage, you cannot use it anymore")
+		}
+
+		if campaign.StartDate.After(time.Now()) {
+			return fmt.Errorf("you cant use the voucher because start campaign is %s", campaign.StartDate)
+		}
+
+		if campaign.EndDate.Before(time.Now()) {
+			return fmt.Errorf("you cant use the voucher because campaign has expired is %s", campaign.EndDate)
 		}
 	}
 	product, err := t.p.GetProductByID(param.ProductID)
@@ -68,7 +76,7 @@ func (t TransactionHandler) CreateTransaction(param model.TransactionParam) erro
 		return err
 	}
 	if campaign.ID != 0 {
-		err = t.c.UpdateQuotaTx(tx, campaign.Quota-1, param.UserID)
+		err = t.c.UpdateQuotaTx(tx, campaign.Quota-1, campaign.ID)
 		if err != nil {
 			tx.Rollback()
 			return err

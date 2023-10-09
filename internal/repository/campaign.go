@@ -9,8 +9,8 @@ type CampaignHandler struct {
 	db *sql.DB
 }
 
-func (c CampaignHandler) UpdateQuotaTx(tx *sql.Tx, total, userID int) error {
-	_, err := tx.Exec(updateQuotaVoucher, total, userID)
+func (c CampaignHandler) UpdateQuotaTx(tx *sql.Tx, total, campaignID int) error {
+	_, err := tx.Exec(updateQuotaVoucher, total, campaignID)
 	if err != nil {
 		return err
 	}
