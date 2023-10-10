@@ -1,6 +1,9 @@
 package utils
 
-import "fmt"
+import (
+	"fmt"
+	"gopkg.in/gomail.v2"
+)
 
 type NotificationType string
 
@@ -19,23 +22,22 @@ type Notification struct {
 func SendNotification(notification Notification) error {
 	if notification.Type == NotificationTypeEmail {
 		// Set up the email sender
-		email := "youremail@gmail.com"
-		password := "yourpassword"
+		email := "arifkurniawandev96@gmail.com"
+		password := "opsoacmvrhazvgyn"
 
 		mailer := gomail.NewMessage()
 		mailer.SetHeader("From", email)
-		mailer.SetHeader("To", "recipient@example.com")
-		mailer.SetHeader("Subject", "Hello from Golang")
-		mailer.SetBody("text/plain", "This is the email body.")
+		mailer.SetHeader("To", notification.Target)
+		mailer.SetHeader("Subject", notification.Subject)
+		mailer.SetBody("text/plain", notification.Body)
 
 		// Create a new SMTP client session
 		dialer := gomail.NewDialer("smtp.gmail.com", 587, email, password)
 
 		// Send the email
 		if err := dialer.DialAndSend(mailer); err != nil {
-			log.Fatal(err)
+			return err
 		}
-
 		fmt.Println("Email sent successfully!")
 
 	} else if notification.Type == NotificationTypeSms {
