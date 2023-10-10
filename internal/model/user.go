@@ -22,8 +22,14 @@ type User struct {
 	BornDate  time.Time  `json:"born_date,omitempty" db:"born_date"`
 	Email     string     `json:"email" db:"email"`
 	IsAdmin   bool       `json:"is_admin,omitempty" db:"is_admin"`
-	Password  string     `json:"password" db:"password"`
+	Password  string     `json:"password,omitempty" db:"password"`
 	CreatedAt time.Time  `json:"created_at" db:"created_at"`
 	UpdatedAt time.Time  `json:"updated_at" db:"updated_at"`
 	DeletedAt *time.Time `json:"deleted_at,omitempty" db:"deleted_at"`
+}
+
+type FetchUserParam struct {
+	IDs      []int    `json:"ids,omitempty"`
+	Emails   []string `json:"emails,omitempty"`
+	BornDate string   `json:"born_date,omitempty"`
 }
