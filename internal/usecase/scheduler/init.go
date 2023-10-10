@@ -19,7 +19,7 @@ func RunCron(u usecase.UserUcase, t usecase.TransactionUcase) {
 	jakartaTime, _ := time.LoadLocation("Asia/Jakarta")
 	scheduler := cron.New(cron.WithLocation(jakartaTime))
 	{
-		scheduler.AddFunc("* * * * *", c.GenerateBirthdayCampaign)
+		scheduler.AddFunc("0 9 * * *", c.GenerateBirthdayCampaign)
 	}
 	go scheduler.Start()
 }
