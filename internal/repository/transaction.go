@@ -9,6 +9,10 @@ type TransactionHandler struct {
 	db *sql.DB
 }
 
+func NewTransactionRepository(db *sql.DB) TransactionRepository {
+	return &TransactionHandler{db}
+}
+
 func (t TransactionHandler) CreateTransactionTx(tx *sql.Tx, transaction model.Transaction) error {
 	query := createTransactionWithPromo
 	if transaction.CampaignID == 0 {
@@ -24,8 +28,4 @@ func (t TransactionHandler) CreateTransactionTx(tx *sql.Tx, transaction model.Tr
 		return err
 	}
 	return err
-}
-
-func NewTransactionRepository(db *sql.DB) TransactionRepository {
-	return &TransactionHandler{db}
 }

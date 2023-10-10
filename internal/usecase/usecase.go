@@ -11,6 +11,8 @@ type UserUcase interface {
 	CreateCampaignForBirthdayUser() error
 	GetVoucerByUserID(userId int) ([]model.Campaign, error)
 	GetListProduct() ([]model.Product, error)
+	CreateCampaign(ctx echo.Context, param model.CampaignParam) error
+	GetListUsers(ctx echo.Context, param model.FetchUserParam) ([]model.User, error)
 }
 
 type TransactionUcase interface {

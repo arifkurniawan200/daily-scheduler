@@ -9,6 +9,10 @@ type ProductHandler struct {
 	db *sql.DB
 }
 
+func NewProductRepository(db *sql.DB) ProductRepository {
+	return &ProductHandler{db}
+}
+
 func (p ProductHandler) GetProductByID(productID int) (model.Product, error) {
 	var (
 		data model.Product
@@ -59,8 +63,4 @@ func (p ProductHandler) GetProduct() ([]model.Product, error) {
 		return datas, err
 	}
 	return datas, err
-}
-
-func NewProductRepository(db *sql.DB) ProductRepository {
-	return &ProductHandler{db}
 }

@@ -9,6 +9,10 @@ type CampaignHandler struct {
 	db *sql.DB
 }
 
+func NewCampaignRepository(db *sql.DB) CampaignRepository {
+	return &CampaignHandler{db}
+}
+
 func (c CampaignHandler) UpdateQuotaTx(tx *sql.Tx, total, campaignID int) error {
 	_, err := tx.Exec(updateQuotaVoucher, total, campaignID)
 	if err != nil {
@@ -83,8 +87,4 @@ func (c CampaignHandler) CampaignUsersTx(tx *sql.Tx, campaignID, userID int) err
 		return err
 	}
 	return err
-}
-
-func NewCampaignRepository(db *sql.DB) CampaignRepository {
-	return &CampaignHandler{db}
 }

@@ -10,6 +10,7 @@ type UserRepository interface {
 	GetUserByEmail(email string) (model.User, error)
 	GetUserTodayBirthday(date string) ([]model.User, error)
 	BeginTx() (*sql.Tx, error)
+	FetchUserByFilter(param model.FetchUserParam) ([]model.User, error)
 }
 
 type CampaignRepository interface {

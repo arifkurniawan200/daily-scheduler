@@ -18,6 +18,75 @@ type UserHandler struct {
 	p repository.ProductRepository
 }
 
+func (u UserHandler) CreateCampaign(ctx echo.Context, param model.CampaignParam) error {
+	// check if admin already send voucher code, if none will automatically generate
+	if param.Code == "" {
+		model.GeneratePromoCode(&param)
+	}
+
+	tx, err := u.u.BeginTx()
+	if err != nil {
+		return err
+	}
+
+	campaignID, err := u.c.CreateCampaignTx(tx, model.Campaign{
+		Code:      param.Code,
+		Name:      param.Name,
+		Amount:    param.Amount,
+		Quota:     param.Quota,
+		StartDate: param.StartDate,
+		EndDate:   param.EndDate,
+	})
+	if err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	users, err := u.u.FetchUserByFilter(model.FetchUserParam{
+		IDs: param.ReceiverIds,
+	})
+
+	if err != nil {
+		return err
+	}
+
+	for _, user := range users {
+		err = u.c.CampaignUsersTx(tx, int(campaignID), user.ID)
+		if err != nil {
+			tx.Rollback()
+			return err
+		}
+
+		go func(user model.User) {
+			err = utils.SendNotification(utils.Notification{
+				Target:  user.Email,
+				Type:    utils.NotificationTypeEmail,
+				Subject: "You receive new voucher, check your voucher list",
+				Body:    "Congratulations you received a new gift voucher from us, please use the voucher before expired date",
+			})
+			if err != nil {
+				log.Error(err)
+			}
+		}(user)
+	}
+
+	err = tx.Commit()
+	if err != nil {
+		return err
+	}
+
+	return err
+}
+
+func (u UserHandler) GetListUsers(ctx echo.Context, param model.FetchUserParam) ([]model.User, error) {
+	if param.BornDate != "" {
+		if !utils.IsValidDate(param.BornDate) {
+			return nil, fmt.Errorf("invalid format of date, shoulf YYYY-MM-DD")
+		}
+	}
+	return u.u.FetchUserByFilter(param)
+}
+
 func (u UserHandler) GetListProduct() ([]model.Product, error) {
 	return u.p.GetProduct()
 }
@@ -73,6 +142,19 @@ func (u UserHandler) CreateCampaignForBirthdayUser() error {
 			tx.Rollback()
 			return err
 		}
+
+		go func(user model.User) {
+			err = utils.SendNotification(utils.Notification{
+				Target:  user.Email,
+				Type:    utils.NotificationTypeEmail,
+				Subject: "Happy Birthday for you, we have special gift for you",
+				Body:    "to celebrate your birthday, we gift you a special birthday gift, you can used the voucher to buy product in our app",
+			})
+			if err != nil {
+				log.Error(err)
+			}
+		}(user)
+
 	}
 	err = tx.Commit()
 	if err != nil {

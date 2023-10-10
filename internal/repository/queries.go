@@ -71,4 +71,21 @@ const (
 		SET quota = ?
 		WHERE id = ?
 		`
+
+	baseGetUser = `
+		SELECT
+				id,
+				NIK,
+				full_name,
+				born_place,
+				born_date,
+				is_admin,
+				email,
+				created_at,
+				updated_at,
+				deleted_at
+			FROM
+				users
+			%s
+`
 )
