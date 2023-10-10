@@ -66,6 +66,9 @@ func Run(u usecase.UserUcase, t usecase.TransactionUcase) {
 	{
 		admin.Use(JWTMiddleware("secret")) // still default,can change anytime (i suggest i should placed in  .env)
 		admin.Use(AdminMiddleware)
+		admin.GET("/users", h.FetchUser)
+		admin.POST("/campaign", h.CreateCampaign)
+		admin.POST("/manuel-trigger-cron-birthday", h.TriggerCron)
 	}
 
 	var wg sync.WaitGroup
